@@ -66,7 +66,7 @@ pub fn exportar(all_version: Option<bool>) -> io::Result<()> {
     let lista_pwsh_paquetes = format!("$paquetes = {}", paquetes_str.join(", "));
 
     let original_file_path = "temp.ps1";
-    let new_file_path = "../instalador.ps1";
+    let new_file_path = "./instalador.ps1";
 
     // Abre el archivo original en modo de lectura
     let original_file = File::open(&original_file_path)?;

@@ -10,7 +10,7 @@ use crate::funciones::helpers::*;
 
 use crate::paquete::Paquete;
 
-const HOST:&str = "https://ktw.onrender.com/";
+const HOST:&str = "https://repo.ecosolucionesweb.com/";
 
 
 pub async fn descargar_recurso(paquete: Paquete) -> Result<(), Box<dyn Error>> {

@@ -1,6 +1,5 @@
-$paquetes = ""
 
-$HOSTKTW = "https://ktw.onrender.com/"
+$HOSTKTW = "https://repo.ecosolucionesweb.com/"
 
 $PSStyle.Progress.View = "Minimal"
 
