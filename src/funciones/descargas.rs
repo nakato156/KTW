@@ -5,12 +5,13 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs::{File, create_dir_all};
 use std::io::Write;
+use serde_urlencoded;
 use std::process::Command;
 use crate::funciones::helpers::*;
 
 use crate::paquete::Paquete;
 
-const HOST:&str = "https://repo.ecosolucionesweb.com/";
+const HOST:&str = "https://repo.ecosolucionesweb.com";
 
 
 pub async fn descargar_recurso(paquete: Paquete) -> Result<(), Box<dyn Error>> {
@@ -19,16 +20,30 @@ pub async fn descargar_recurso(paquete: Paquete) -> Result<(), Box<dyn Error>> {
     map.insert("version".to_string(), version.clone());
     map.insert("win".to_string(), win.clone());
 
-    let url = format!("{HOST}/repo/install/{}", nombre);
+    let query_string = serde_urlencoded::to_string(map.clone())?;
+    let url = format!("{HOST}/repo/install/{}?{}", nombre, query_string);
+
     let client = Client::new();
-    let res = client.post(&url)
+    let res_info = client.head(&url.clone()).send().await?;
+    print!("{:?}", res_info);
+
+    if !res_info.status().is_success() {
+        return Err(format!("Error:{}", res_info.status()).into());
+    }
+    
+    let content_length = res_info.content_length();
+    if content_length == 0 {
+        return Err("Error: Eclx0 No se pudo descargar".into());
+    }
+
+    let res = client.get(&url)
         .header(reqwest::header::CONTENT_TYPE, "application/json")
         .body(serde_json::to_string(&map)?)
         .send()
         .await?;
     
+    print!("content length {:?}", res);
     if res.status().is_success() {
-        let content_length = res.content_length().unwrap_or(0);
 
         let pb = ProgressBar::new(100);
         pb.set_style(ProgressStyle::with_template("[{elapsed_precise}] {bar:40.cyan/blue} {pos:>7}/{len:7} {msg}")
